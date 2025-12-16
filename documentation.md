@@ -3,480 +3,712 @@ summary: Exit-Readiness AI Narrative & Valuation Impact Calculator Documentation
 feedback link: https://docs.google.com/forms/d/e/1FAIpQLSfWkOK-in_bMMoHSZfcIvAeO58PAH9wrDqcxnJABHaxiDqhSA/viewform?usp=sf_link
 environments: Web
 status: Published
-# Building an AI Exit-Readiness & Valuation Impact Calculator with Streamlit
+# QuLab: AI Exit-Readiness & Valuation Impact Calculator - Developer Guide
 
-## 1. Introduction and Setup
-Duration: 0:10:00
+## 1. Introduction to QuLab and its Significance
+Duration: 0:08:00
 
-In today's rapidly evolving market, the integration and articulation of Artificial Intelligence (AI) capabilities are no longer just technological differentiators but critical drivers of enterprise value, especially in mergers and acquisitions (M&A) scenarios. For private equity firms and portfolio managers, understanding how to systematically assess, quantify, and present a company's AI maturity can profoundly impact its exit valuation.
+Welcome to this codelab on **QuLab: AI Exit-Readiness & Valuation Impact Calculator**. In today's dynamic M&A landscape, the integration and strategic articulation of Artificial Intelligence (AI) capabilities have become critical drivers of company valuation. This application empowers portfolio managers, like our persona Jane Doe from Alpha Capital, to systematically assess a company's AI maturity and quantify its potential impact on exit valuation.
 
-This codelab guides you through developing a comprehensive Streamlit application designed to help portfolio managers like **Jane Doe** (our persona in this lab) prepare her portfolio company, **InnovateTech**, for a successful exit. The application provides a structured workflow to:
-1.  **Define Context**: Set up the fundamental details of the assessment.
-2.  **Assess AI Dimensions**: Evaluate the company's AI across key dimensions: "Visible", "Documented", and "Sustainable".
-3.  **Quantify Readiness**: Calculate a composite **Exit-AI-R Score** using customized weightings.
-4.  **Project Valuation**: Estimate the tangible impact of the AI-R Score on the company's EBITDA multiple.
-5.  **Articulate the Narrative**: Generate a data-driven report to present a compelling AI story to potential acquirers.
+### The Scenario: InnovateTech's Exit Strategy
 
-By the end of this codelab, you will have a deep understanding of how to build interactive data applications with Streamlit, manage application state, and implement a sophisticated valuation model, all while focusing on a high-impact business problem.
+Imagine **Jane Doe**, a Portfolio Manager at **Alpha Capital**, tasked with preparing her portfolio company, **InnovateTech**, for a successful exit. She understands that a strong AI narrative is not just a buzzword, but a tangible asset that can significantly uplift valuation. QuLab provides Jane with the tools to:
 
-### Application Architecture Overview
+1.  **Systematically Assess InnovateTech's AI Capabilities**: Evaluate the company's AI across three crucial dimensions: **Visible**, **Documented**, and **Sustainable**.
+2.  **Quantify AI Readiness**: Calculate a comprehensive **Exit-AI-R Score** by weighting these dimensions according to market priorities and InnovateTech's specific context.
+3.  **Project Valuation Uplift**: Model the potential financial impact of this AI readiness on InnovateTech's EBITDA multiple, a key valuation metric.
+4.  **Craft a Data-Driven Narrative**: Generate a persuasive report for potential strategic and financial buyers, leveraging the quantitative analysis performed within the application.
 
-The application is structured into a main `streamlit_app.py` file and several modular `application_pages` Python files. This modular design enhances readability, maintainability, and scalability.
-
-```
-.
-├── streamlit_app.py
-└── application_pages/
-    ├── __init__.py
-    ├── page_1_setup.py
-    ├── page_2_assessment.py
-    ├── page_3_calculate_air.py
-    ├── page_4_valuation.py
-    └── page_5_narrative.py
-```
-
-*   `streamlit_app.py`: This is the entry point of the application. It sets up the Streamlit page configuration, initializes session state variables, displays the main introduction, and handles navigation between different functional pages.
-*   `application_pages/*.py`: Each file encapsulates the UI and logic for a specific section or step of the AI exit-readiness assessment.
+This application acts as an end-to-end guide, demonstrating how AI concepts and analytical tools can be applied to inform critical decisions regarding exit strategies and valuation.
 
 <aside class="positive">
-<b>Best Practice:</b> Modularizing your Streamlit application into separate files for different sections or functionalities significantly improves code organization and makes it easier to manage complex applications.
+<b>Key Takeaway:</b> Understanding and articulating a company's AI capabilities is no longer a niche skill, but a core competency for maximizing enterprise value in M&A. QuLab provides a structured framework for this assessment.
 </aside>
 
-### Streamlit Session State
+### Core Concepts Explained
 
-A crucial aspect of this application is the use of `st.session_state`. Streamlit reruns the entire script from top to bottom every time a user interacts with the app. `st.session_state` allows you to persist variables across these reruns, maintaining the state of your application.
+*   **AI Exit-Readiness (Exit-AI-R)**: A holistic measure of how well a company's AI capabilities are positioned to drive value and appeal to potential acquirers. It considers both the current state and future potential of AI within the organization.
+*   **AI Dimensions (Visible, Documented, Sustainable)**:
+    *   **Visible AI**: Refers to AI applications and features that are evident to customers, users, or external stakeholders (e.g., AI-powered product features, intelligent automation visible in customer journeys).
+    *   **Documented AI**: Encompasses the formal intellectual property, patents, research papers, internal documentation, and code repositories related to AI (e.g., proprietary algorithms, unique datasets, patents on AI methods).
+    *   **Sustainable AI**: Pertains to the organizational infrastructure, talent, culture, and data pipelines that support the long-term development and maintenance of AI capabilities (e.g., dedicated AI teams, MLOps practices, ethical AI guidelines, continuous data acquisition strategies).
+*   **EBITDA Multiple**: A common valuation metric used in M&A, calculated as Enterprise Value / Earnings Before Interest, Taxes, Depreciation, and Amortization. A higher multiple generally indicates a higher valuation.
+*   **Valuation Uplift**: The increase in a company's valuation attributable to specific factors, in this case, a strong AI Exit-Readiness.
 
-Let's look at the `streamlit_app.py` to understand how session state is initialized and used.
+### Application Overview
+
+The QuLab application is built using **Streamlit**, a Python library that simplifies the creation of web applications for data science and machine learning. It provides an interactive interface for users to input data, perform calculations, and visualize results.
+
+The application's structure is modular, with a central `app.py` orchestrating navigation and importing functionality from separate page files in the `application_pages` directory. This modularity makes the application easy to understand, maintain, and extend.
 
 ```python
+# app.py structure
 import streamlit as st
-import sys
-import os
+import utils # For session state initialization and common functions
 
-# Set Streamlit page configuration
-st.set_page_config(page_title="AI Exit-Readiness & Valuation Impact Calculator", layout="wide")
+st.set_page_config(page_title="QuLab", layout="wide")
+st.sidebar.image("https://www.quantuniversity.com/assets/img/logo5.jpg")
+st.sidebar.divider()
+st.title("QuLab: AI Exit-Readiness & Valuation Impact Calculator")
+st.divider()
 
-# Sidebar elements (omitted for brevity, see full code)
+# ... (Introduction markdown) ...
 
-#  Initialize session state for persistent variables 
-# These initializations ensure all variables exist from the start of the application
-# and maintain their values across page changes or reruns.
-if 'persona_name' not in st.session_state:
-    st.session_state.persona_name = "Jane Doe"
-if 'firm_name' not in st.session_state:
-    st.session_state.firm_name = "Alpha Capital"
-if 'company_name' not in st.session_state:
-    st.session_state.company_name = "InnovateTech"
-# ... (other session state initializations) ...
+# Sidebar for Reset button
+with st.sidebar:
+    st.header("Control Panel")
+    if st.button("Reset Application"):
+        st.session_state.clear()
+        st.rerun()
 
-# Flags to control conditional display of results/plots after button clicks,
-# ensuring outputs only appear after explicit user actions.
-if 'plot_scores_triggered' not in st.session_state:
-    st.session_state.plot_scores_triggered = False
-# ... (other flag initializations) ...
+st.sidebar.divider()
 
-st.markdown("""
-In this lab, **Jane Doe**, a Portfolio Manager at **Alpha Capital**, embarks on a critical task: preparing her portfolio company, **InnovateTech**, for a successful exit. ...
-""")
+# Navigation using selectbox
+page = st.sidebar.selectbox(
+    label="Navigation",
+    options=[
+        "1. Setup and Introduction",
+        "2. Assess AI Dimensions",
+        "3. Calculate Exit-AI-R Score",
+        "4. Project Valuation Uplift",
+        "5. Craft AI Exit Narrative"
+    ]
+)
 
-# Sidebar for navigation (omitted for brevity, see full code)
-
-# Page routing based on sidebar selection.
+# Page routing logic
 if page == "1. Setup and Introduction":
     from application_pages.page_1_setup import main
     main()
-# ... (other page routing) ...
+elif page == "2. Assess AI Dimensions":
+    from application_pages.page_2_assess_dimensions import main
+    main()
+# ... (other page imports) ...
+
+st.markdown("")
+st.caption("This application helps portfolio managers quantify and articulate the value of AI in portfolio companies for exit strategies.")
 ```
 
-Notice how each session state variable (e.g., `st.session_state.persona_name`, `st.session_state.visible_score`) is initialized with a default value only if it doesn't already exist in `st.session_state`. This pattern ensures that values are preserved after the initial setup.
+To run this application, you would typically have a file structure like this:
 
-The first step, handled by `application_pages/page_1_setup.py`, allows the user to customize the persona and company names, which are then stored in `st.session_state`.
+```
+quLab/
+├── app.py
+├── utils.py
+└── application_pages/
+    ├── __init__.py
+    ├── page_1_setup.py
+    ├── page_2_assess_dimensions.py
+    ├── page_3_calculate_score.py
+    ├── page_4_project_valuation.py
+    └── page_5_craft_narrative.py
+```
+
+Assuming you have `streamlit` installed, navigate to the `quLab` directory in your terminal and run:
+
+```console
+streamlit run app.py
+```
+
+This will launch the application in your web browser.
+
+## 2. Understanding the Application Architecture
+Duration: 0:10:00
+
+The QuLab application follows a clear, modular architecture designed for Streamlit. This approach ensures that the application is scalable, maintainable, and easy to navigate.
+
+### Core Architectural Components
+
+1.  **`app.py` (Main Orchestrator)**:
+    *   Sets up the Streamlit page configuration (`st.set_page_config`).
+    *   Displays the application title and introductory markdown.
+    *   Manages the global `st.session_state` (e.g., the "Reset Application" button).
+    *   Provides the main navigation sidebar (`st.sidebar.selectbox`).
+    *   Dynamically imports and calls the `main()` function of the selected page module.
+
+2.  **`utils.py` (Shared Utilities)**:
+    *   This module is crucial for initializing and managing the Streamlit `st.session_state`.
+    *   It likely contains functions to set default values for variables that need to persist across different pages of the application.
+    *   It could also house common helper functions or data loading logic used by multiple pages.
+
+3.  **`application_pages/` (Page Modules)**:
+    *   Each file within this directory (`page_1_setup.py`, `page_2_assess_dimensions.py`, etc.) represents a distinct step or page in the application's workflow.
+    *   Each page module is expected to have a `main()` function, which Streamlit calls to render the content of that specific page.
+    *   These modules encapsulate the UI components (inputs, displays), calculations, and specific logic relevant to their respective steps.
+
+### Application Flow Diagram
+
+The following diagram illustrates the high-level architecture and data flow within the QuLab application:
+
+```mermaid
+graph TD
+    A[User Interaction] --> B(Streamlit App: app.py)
+    B -- Renders UI --> C{Navigation Sidebar}
+    C -- Select Page --> D(Page Modules: application_pages/*.py)
+    D -- Initializes/Updates --> E(st.session_state)
+    E -- Provides persistent data --> D
+    B -- Imports shared functions --> F(utils.py)
+    F -- Initializes st.session_state defaults --> E
+    D -- Displays Outputs/Calculations --> B
+```
+
+**Explanation of the Flow:**
+
+1.  **User Interaction**: The user interacts with the Streamlit UI, primarily through the sidebar navigation.
+2.  **`app.py` (Orchestrator)**: `app.py` is the entry point. It sets up the overall layout and handles global controls like the "Reset" button.
+3.  **Navigation Sidebar**: The `st.sidebar.selectbox` allows the user to choose which functional page to view.
+4.  **Page Modules**: Based on the selected page, `app.py` imports the corresponding module (e.g., `page_2_assess_dimensions.py`) and calls its `main()` function.
+5.  **`st.session_state`**: This is Streamlit's mechanism for storing variables that persist across reruns and page changes. Each page will read from and write to `st.session_state` to share data. `utils.py` often plays a key role in ensuring `st.session_state` is properly initialized with default values when the application first starts or is reset.
+6.  **`utils.py`**: Contains shared logic, including functions to initialize `st.session_state` variables if they don't already exist. This prevents errors when pages try to access non-existent keys in the session state.
+
+### `st.session_state` Management
+
+A crucial aspect of multi-page Streamlit applications is state management. Since Streamlit reruns the entire script on every interaction, `st.session_state` is used to maintain variables across these reruns and across different selected pages.
+
+**Example of `utils.py` for session state initialization (conceptual):**
 
 ```python
-# application_pages/page_1_setup.py (conceptual content)
+# utils.py
+def initialize_session_state():
+    if "company_name" not in st.session_state:
+        st.session_state.company_name = "InnovateTech"
+    if "ai_visible_score" not in st.session_state:
+        st.session_state.ai_visible_score = 50 # Default score
+    if "dimension_weights" not in st.session_state:
+        st.session_state.dimension_weights = {"visible": 0.33, "documented": 0.33, "sustainable": 0.34}
+    # ... and so on for all variables needed across pages
+
+# In app.py or in each page's main() function:
+# utils.initialize_session_state()
+```
+
+<aside class="negative">
+<b>Warning:</b> Failing to properly initialize `st.session_state` can lead to `KeyError` exceptions when a page attempts to access a variable that hasn't been set yet. Always check for existence (`if "key" not in st.session_state:`) before setting defaults.
+</aside>
+
+## 3. Setup and Introduction Page (`page_1_setup.py`)
+Duration: 0:05:00
+
+This is the first functional page a user encounters, beyond the main `app.py` introduction. Its primary purpose is to introduce the specific scenario (InnovateTech) and allow for initial setup, such as defining the company name or setting some baseline parameters that will be used throughout the application.
+
+### Page Purpose
+
+The `page_1_setup.py` module serves as a soft entry point after the main application introduction. It likely allows users to:
+*   Confirm or input the company name being analyzed.
+*   Potentially set initial context or assumptions.
+*   Reiterate the value proposition and the journey the user is about to undertake.
+
+### Expected Functionality
+
+```python
+# application_pages/page_1_setup.py (conceptual)
 import streamlit as st
+import utils # Assuming utils has the state initialization
 
 def main():
-    st.header("1. Setup and Introduction")
-    st.write("Welcome to the AI Exit-Readiness & Valuation Impact Calculator.")
+    utils.initialize_session_state() # Ensure session state is ready
 
-    with st.expander("Define Assessment Context"):
-        st.session_state.persona_name = st.text_input(
-            "Your Name (Persona)",
-            value=st.session_state.persona_name,
-            key="persona_name_input"
-        )
-        st.session_state.firm_name = st.text_input(
-            "Your Firm's Name",
-            value=st.session_state.firm_name,
-            key="firm_name_input"
-        )
-        st.session_state.company_name = st.text_input(
-            "Company Being Assessed",
-            value=st.session_state.company_name,
-            key="company_name_input"
-        )
-    
-    st.info(f"Current Context: **{st.session_state.persona_name}** from **{st.session_state.firm_name}** is assessing **{st.session_state.company_name}**.")
+    st.header("1. Setup and Introduction")
+    st.markdown("""
+    Welcome to the QuLab analysis for **InnovateTech**! This section sets the stage for our comprehensive AI exit-readiness and valuation impact assessment.
+    """)
+
+    # Allow user to input/confirm the company name
+    st.session_state.company_name = st.text_input(
+        "Company Name for Analysis",
+        value=st.session_state.get("company_name", "InnovateTech"),
+        help="Enter the name of the portfolio company you are analyzing."
+    )
+
+    st.info(f"You are currently analyzing: **{st.session_state.company_name}**")
 
     st.markdown("""
-    This section provides the overall introduction and allows you to set the context for the assessment.
-    Use the sidebar navigation to move through the different stages of the AI exit-readiness calculation.
+    <aside class="positive">
+    <b>Objective:</b> Over the next few steps, we will systematically evaluate <b>InnovateTech's</b> AI capabilities, quantify its AI readiness score, project potential valuation uplifts, and finally, craft a compelling AI exit narrative.
+    </aside>
+    """)
+
+    st.subheader("What to Expect:")
+    st.markdown("""
+    *   **Assess AI Dimensions**: You will score the company across Visible, Documented, and Sustainable AI aspects.
+    *   **Calculate Exit-AI-R Score**: These scores will be weighted and aggregated into a single AI Readiness Score.
+    *   **Project Valuation Uplift**: We will model how this score translates into an uplift in the company's EBITDA multiple.
+    *   **Craft AI Exit Narrative**: Finally, all insights will be compiled into a persuasive report.
     """)
 ```
 
-This page allows the user to update the default `persona_name`, `firm_name`, and `company_name` stored in `st.session_state`, dynamically updating the application's context.
+### Key Concepts from this Page
 
-## 2. Assessing AI Dimensions
+*   **User Input and `st.text_input`**: Demonstrates how to get basic text input from the user.
+*   **`st.session_state.get()`**: A safe way to retrieve values from `st.session_state` with a fallback default, preventing errors if the key doesn't exist yet.
+*   **Context Setting**: Crucial for guiding the user through the application's workflow.
+
+## 4. Assess AI Dimensions (`page_2_assess_dimensions.py`)
 Duration: 0:15:00
 
-A robust AI strategy involves more than just implementing algorithms; it requires a holistic approach across several critical dimensions. This application focuses on three key areas to evaluate a company's AI maturity:
+This page is where the core qualitative and quantitative assessment of the company's AI capabilities begins. Users will evaluate the company across the three predefined AI dimensions: Visible, Documented, and Sustainable.
 
-*   **Visible AI (Score: 0-100)**: Reflects the extent to which AI is embedded in customer-facing products, services, and core business operations, making its value immediately apparent to stakeholders and users.
-    *   *Examples*: AI-powered features in SaaS products, automated customer support, predictive analytics in sales.
-*   **Documented AI (Score: 0-100)**: Pertains to the formalization and governance of AI initiatives. This includes clear strategies, data pipelines, ethical guidelines, IP protection, and compliance frameworks.
-    *   *Examples*: Documented AI strategy, data governance policies, AI-specific patents, explainable AI (XAI) reports.
-*   **Sustainable AI (Score: 0-100)**: Assesses the long-term viability and growth potential of AI efforts, considering talent, research & development (R&D), infrastructure, and adaptability to future trends.
-    *   *Examples*: Dedicated AI R&D budget, hiring and retention of AI talent, scalable AI infrastructure, partnerships with AI research institutions.
+### Page Purpose
 
-In this step, the user (Jane Doe) will input scores for these dimensions, reflecting her assessment of InnovateTech. These scores are captured using Streamlit sliders.
+The `page_2_assess_dimensions.py` module facilitates the detailed evaluation of InnovateTech's AI capabilities. It aims to gather scores and potentially qualitative descriptions for each dimension, which will then feed into the Exit-AI-R Score calculation.
 
-Let's examine the conceptual content of `application_pages/page_2_assessment.py`:
+### Key Concepts
+
+*   **Multi-Dimensional Assessment**: Breaking down a complex concept (AI readiness) into measurable, actionable dimensions.
+*   **Qualitative and Quantitative Input**: Combining subjective scoring (e.g., via sliders) with descriptive text.
+*   **`st.slider`**: A Streamlit widget ideal for gathering scores within a defined range.
+*   **`st.text_area`**: For allowing detailed qualitative descriptions.
+
+### Expected Functionality
+
+Users will likely interact with input fields (e.g., sliders) to assign a score (e.g., from 0 to 100) for each AI dimension. They might also provide brief descriptions or justifications for their scores.
 
 ```python
-# application_pages/page_2_assessment.py (conceptual content)
+# application_pages/page_2_assess_dimensions.py (conceptual)
 import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
-
-def plot_ai_scores(visible, documented, sustainable):
-    labels = ['Visible AI', 'Documented AI', 'Sustainable AI']
-    scores = [visible, documented, sustainable]
-    
-    fig, ax = plt.subplots(figsize=(8, 5))
-    bars = ax.bar(labels, scores, color=['skyblue', 'lightcoral', 'lightgreen'])
-    ax.set_ylabel('Score (0-100)')
-    ax.set_title(f'AI Dimension Scores for {st.session_state.company_name}')
-    ax.set_ylim(0, 100)
-    
-    for bar in bars:
-        yval = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2, yval + 2, round(yval, 1), ha='center', va='bottom') # Offset text slightly
-    
-    st.pyplot(fig) # Display the plot in Streamlit
+import utils
 
 def main():
-    st.header("2. Assessing AI Dimensions")
-    st.markdown(f"Evaluate **{st.session_state.company_name}'s** AI capabilities across three critical dimensions.")
+    utils.initialize_session_state()
 
-    st.subheader("Input AI Dimension Scores (0-100)")
-    st.session_state.visible_score = st.slider(
-        "Visible AI: How integrated and apparent is AI in products/operations?",
-        min_value=0, max_value=100, value=st.session_state.visible_score,
-        key="visible_score_slider"
+    st.header("2. Assess AI Dimensions")
+    st.markdown(f"""
+    Evaluate **{st.session_state.company_name}'s** AI capabilities across the three critical dimensions.
+    Provide a score (0-100) and a brief justification for each.
+    """)
+
+    # Visible AI
+    st.subheader("Visible AI Capabilities")
+    st.markdown("""
+    How evident are **InnovateTech's** AI applications and features to customers, users, or external stakeholders?
+    Consider customer-facing AI products, intelligent automation impacting user experience, etc.
+    """)
+    st.session_state.ai_visible_score = st.slider(
+        "Visible AI Score", 0, 100,
+        value=st.session_state.get("ai_visible_score", 50),
+        help="Score 0-100 based on the visibility of AI to external parties."
     )
-    st.session_state.documented_score = st.slider(
-        "Documented AI: How well-defined are AI strategies, governance, and IP?",
-        min_value=0, max_value=100, value=st.session_state.documented_score,
-        key="documented_score_slider"
-    )
-    st.session_state.sustainable_score = st.slider(
-        "Sustainable AI: What is the long-term viability of AI efforts (talent, R&D, infra)?",
-        min_value=0, max_value=100, value=st.session_state.sustainable_score,
-        key="sustainable_score_slider"
+    st.session_state.ai_visible_desc = st.text_area(
+        "Description for Visible AI",
+        value=st.session_state.get("ai_visible_desc", "InnovateTech has launched several AI-powered features in its core product, leading to improved user engagement."),
+        height=100
     )
 
-    if st.button("Plot AI Dimension Scores"):
-        st.session_state.plot_scores_triggered = True
-    
-    if st.session_state.plot_scores_triggered:
-        st.subheader("AI Dimension Score Visualization")
-        plot_ai_scores(
-            st.session_state.visible_score,
-            st.session_state.documented_score,
-            st.session_state.sustainable_score
-        )
-        st.success("Scores plotted successfully!")
+    st.divider()
+
+    # Documented AI
+    st.subheader("Documented AI Capabilities")
+    st.markdown("""
+    What formal intellectual property, patents, research, and internal documentation exist around **InnovateTech's** AI?
+    Think about proprietary algorithms, unique datasets, academic publications, etc.
+    """)
+    st.session_state.ai_documented_score = st.slider(
+        "Documented AI Score", 0, 100,
+        value=st.session_state.get("ai_documented_score", 40),
+        help="Score 0-100 based on the formal documentation and IP around AI."
+    )
+    st.session_state.ai_documented_desc = st.text_area(
+        "Description for Documented AI",
+        value=st.session_state.get("ai_documented_desc", "InnovateTech holds 3 patents related to its core AI models and has a robust internal knowledge base for its ML stack."),
+        height=100
+    )
+
+    st.divider()
+
+    # Sustainable AI
+    st.subheader("Sustainable AI Capabilities")
+    st.markdown("""
+    How robust are **InnovateTech's** organizational infrastructure, talent, culture, and data pipelines for long-term AI development and maintenance?
+    Consider dedicated AI teams, MLOps, ethical AI frameworks, data governance, and continuous data acquisition.
+    """)
+    st.session_state.ai_sustainable_score = st.slider(
+        "Sustainable AI Score", 0, 100,
+        value=st.session_state.get("ai_sustainable_score", 60),
+        help="Score 0-100 based on the sustainability and robustness of AI operations."
+    )
+    st.session_state.ai_sustainable_desc = st.text_area(
+        "Description for Sustainable AI",
+        value=st.session_state.get("ai_sustainable_desc", "InnovateTech has a dedicated AI research team, a clear MLOps strategy, and strong data governance policies."),
+        height=100
+    )
+
+    st.divider()
+
+    st.success("AI Dimension scores updated in session state. Proceed to the next step to calculate the Exit-AI-R Score.")
+
+    <aside class="positive">
+    <b>Best Practice:</b> Encourage users to be as objective as possible and provide concise, data-backed justifications. These descriptions will be invaluable when crafting the final narrative.
+    </aside>
 ```
 
-**Key takeaways from this step:**
-
-*   **Sliders for Input**: `st.slider()` is used for intuitive score input, pre-filled with values from `st.session_state`.
-*   **Triggered Display**: The plot is only generated and displayed when the "Plot AI Dimension Scores" button is clicked. This is controlled by the `st.session_state.plot_scores_triggered` flag. This prevents the plot from re-rendering on every minor interaction and ensures a smoother user experience.
-*   **Visualization**: A simple bar chart using `matplotlib` is generated by the `plot_ai_scores` function to visualize the entered scores, providing immediate feedback.
-
-## 3. Calculating Exit-AI-R Score
+## 5. Calculate Exit-AI-R Score (`page_3_calculate_score.py`)
 Duration: 0:15:00
 
-The individual AI dimension scores provide granular insights, but a holistic view is crucial for M&A readiness. This step calculates a single, comprehensive **Exit-AI-R (AI Readiness) Score** by applying user-defined weights to each dimension. This allows Jane Doe to prioritize dimensions based on what she believes is most critical for potential acquirers.
+With the individual AI dimension scores in hand, this page focuses on synthesizing these inputs into a single, comprehensive **Exit-AI-R Score**. This involves assigning weights to each dimension, allowing the user to reflect the relative importance of Visible, Documented, and Sustainable AI for their specific context or market.
 
-The **Exit-AI-R Score** is a weighted average calculated as follows:
+### Page Purpose
 
-$$ \text{Exit-AI-R Score} = (W_{\text{Visible}} \times \text{Score}_{\text{Visible}}) + (W_{\text{Documented}} \times \text{Score}_{\text{Documented}}) + (W_{\text{Sustainable}} \times \text{Score}_{\text{Sustainable}}) $$
+The `page_3_calculate_score.py` module's primary function is to:
+*   Display the previously entered dimension scores.
+*   Allow the user to adjust weighting factors for each dimension.
+*   Calculate the final Exit-AI-R Score based on these weighted inputs.
+*   Potentially visualize the contribution of each dimension to the overall score.
 
-Where:
-*   $W_{\text{Visible}}$, $W_{\text{Documented}}$, $W_{\text{Sustainable}}$ are the weights for Visible, Documented, and Sustainable AI dimensions, respectively.
-*   $\text{Score}_{\text{Visible}}$, $\text{Score}_{\text{Documented}}$, $\text{Score}_{\text{Sustainable}}$ are the scores obtained from the previous step.
-*   The sum of weights must equal 1 ($W_{\text{Visible}} + W_{\text{Documented}} + W_{\text{Sustainable}} = 1$).
+### Key Concepts
 
-Let's look at the conceptual content of `application_pages/page_3_calculate_air.py`:
+*   **Weighted Average**: A fundamental statistical concept used to give different importance to different data points.
+    $ \text{Exit-AI-R Score} = (\text{Visible Score} \times \text{Visible Weight}) + (\text{Documented Score} \times \text{Documented Weight}) + (\text{Sustainable Score} \times \text{Sustainable Weight}) $
+*   **Market Prioritization**: The ability to adjust weights reflects that different market segments or buyer types might prioritize certain AI aspects over others (e.g., a strategic buyer might value Sustainable AI higher, while a financial buyer might focus on Visible AI for immediate revenue impact).
+*   **`st.columns`**: Streamlit layout tool for arranging widgets side-by-side, useful for inputting weights and displaying scores.
+
+### Expected Functionality
+
+The user will see their scores from the previous page. They will then use sliders or number inputs to define the percentage weight for each dimension, ensuring the total weight sums to 100%. The application will dynamically calculate and display the Exit-AI-R Score.
 
 ```python
-# application_pages/page_3_calculate_air.py (conceptual content)
+# application_pages/page_3_calculate_score.py (conceptual)
 import streamlit as st
-import pandas as pd
-import plotly.express as px
-
-def calculate_exit_ai_r_score(visible_score, documented_score, sustainable_score,
-                               w_visible, w_documented, w_sustainable):
-    """Calculates the weighted Exit-AI-R Score."""
-    return (visible_score * w_visible +
-            documented_score * w_documented +
-            sustainable_score * w_sustainable)
-
-def plot_weights_pie(w_visible, w_documented, w_sustainable):
-    data = {'Dimension': ['Visible AI', 'Documented AI', 'Sustainable AI'],
-            'Weight': [w_visible, w_documented, w_sustainable]}
-    df = pd.DataFrame(data)
-    fig = px.pie(df, values='Weight', names='Dimension', title='Distribution of AI Dimension Weights')
-    st.plotly_chart(fig)
+import utils
 
 def main():
-    st.header("3. Calculating Exit-AI-R Score")
-    st.markdown(f"Define the importance of each AI dimension for **{st.session_state.company_name}'s** exit strategy and calculate the overall Exit-AI-R Score.")
+    utils.initialize_session_state()
 
-    st.subheader("Current AI Dimension Scores:")
+    st.header("3. Calculate Exit-AI-R Score")
+    st.markdown(f"""
+    Now, let's aggregate **{st.session_state.company_name}'s** AI dimension scores into a single **Exit-AI-R Score**.
+    Adjust the weights below to reflect the relative importance of each dimension for your specific exit strategy.
+    """)
+
+    st.subheader("Dimension Scores")
     col1, col2, col3 = st.columns(3)
-    col1.metric("Visible AI", st.session_state.visible_score)
-    col2.metric("Documented AI", st.session_state.documented_score)
-    col3.metric("Sustainable AI", st.session_state.sustainable_score)
+    with col1:
+        st.metric("Visible AI Score", f"{st.session_state.get('ai_visible_score', 0)}/100")
+    with col2:
+        st.metric("Documented AI Score", f"{st.session_state.get('ai_documented_score', 0)}/100")
+    with col3:
+        st.metric("Sustainable AI Score", f"{st.session_state.get('ai_sustainable_score', 0)}/100")
 
-    st.subheader("Adjust Dimension Weights")
-    st.write("Adjust the weights below. The sum of weights must be 1.0.")
+    st.subheader("Adjust Dimension Weights (Total must sum to 100%)")
 
-    # Use number inputs for weights
-    w_visible = st.number_input("Weight for Visible AI", min_value=0.0, max_value=1.0, value=st.session_state.w_visible, step=0.01, key="w_visible_input")
-    w_documented = st.number_input("Weight for Documented AI", min_value=0.0, max_value=1.0, value=st.session_state.w_documented, step=0.01, key="w_documented_input")
-    w_sustainable = st.number_input("Weight for Sustainable AI", min_value=0.0, max_value=1.0, value=st.session_state.w_sustainable, step=0.01, key="w_sustainable_input")
+    # Get initial weights or set defaults
+    weights = st.session_state.get("dimension_weights", {"visible": 0.33, "documented": 0.33, "sustainable": 0.34})
 
-    # Update session state with new weights
-    st.session_state.w_visible = w_visible
-    st.session_state.w_documented = w_documented
-    st.session_state.w_sustainable = w_sustainable
+    w_visible = st.slider("Weight for Visible AI (%)", 0, 100, int(weights["visible"] * 100))
+    w_documented = st.slider("Weight for Documented AI (%)", 0, 100, int(weights["documented"] * 100))
+    w_sustainable = st.slider("Weight for Sustainable AI (%)", 0, 100, int(weights["sustainable"] * 100))
 
-    # Check if weights sum to 1.0
-    total_weights = round(w_visible + w_documented + w_sustainable, 2)
-    if total_weights != 1.0:
-        st.warning(f"Total weights must sum to 1.0. Current sum: {total_weights}. Please adjust.")
-    else:
-        st.success(f"Weights sum to 1.0 ({total_weights}). Ready to calculate!")
-        plot_weights_pie(w_visible, w_documented, w_sustainable) # Plot weights when valid
+    # Normalize weights to ensure they sum to 100%
+    total_weight = w_visible + w_documented + w_sustainable
+    if total_weight != 0:
+        w_visible_norm = w_visible / total_weight
+        w_documented_norm = w_documented / total_weight
+        w_sustainable_norm = w_sustainable / total_weight
+    else: # Avoid division by zero if all weights are 0
+        w_visible_norm = w_documented_norm = w_sustainable_norm = 0
 
-        if st.button("Calculate Exit-AI-R Score"):
-            st.session_state.exit_ai_r_score = calculate_exit_ai_r_score(
-                st.session_state.visible_score,
-                st.session_state.documented_score,
-                st.session_state.sustainable_score,
-                st.session_state.w_visible,
-                st.session_state.w_documented,
-                st.session_state.w_sustainable
-            )
-            st.session_state.calculate_air_triggered = True
+    st.session_state.dimension_weights = {
+        "visible": w_visible_norm,
+        "documented": w_documented_norm,
+        "sustainable": w_sustainable_norm,
+    }
 
-    if st.session_state.calculate_air_triggered and st.session_state.exit_ai_r_score is not None:
-        st.markdown(f"### Calculated Exit-AI-R Score: **{st.session_state.exit_ai_r_score:.2f}**")
-        st.success("Exit-AI-R Score calculated!")
+    st.info(f"Current Total Weight: {total_weight}% (Normalized for calculation)")
+
+    # Calculate Exit-AI-R Score
+    ai_score = (st.session_state.get("ai_visible_score", 0) * w_visible_norm +
+                st.session_state.get("ai_documented_score", 0) * w_documented_norm +
+                st.session_state.get("ai_sustainable_score", 0) * w_sustainable_norm)
+
+    st.session_state.exit_ai_r_score = round(ai_score, 2)
+
+    st.divider()
+    st.markdown(f"## Calculated Exit-AI-R Score: **{st.session_state.exit_ai_r_score} / 100**")
+
+    <aside class="positive">
+    <b>Tip:</b> Experiment with different weightings to understand how market priorities (e.g., favoring IP vs. customer-facing features) can impact the overall AI readiness perception.
+    </aside>
 ```
 
-**Key concepts demonstrated:**
-
-*   **`st.number_input()`**: Used for precise input of weights, ensuring they are floats.
-*   **Weight Validation**: The application actively checks if the sum of weights equals 1.0 and provides a warning if not, guiding the user.
-*   **Dynamic Calculation**: The `calculate_exit_ai_r_score` function computes the score based on current scores and weights.
-*   **Conditional Display**: The final score is displayed only after the "Calculate Exit-AI-R Score" button is pressed and the weights are valid, again using a session state flag (`calculate_air_triggered`).
-*   **`st.metric()`**: Provides a clean way to display key numerical values like the current dimension scores.
-*   **Pie Chart for Weights**: Using `plotly.express` for an interactive visualization of how weights are distributed, which helps the user understand their chosen emphasis.
-
-## 4. Projecting Valuation Uplift
+## 6. Project Valuation Uplift (`page_4_project_valuation.py`)
 Duration: 0:20:00
 
-The ultimate goal of assessing AI exit-readiness is to quantify its impact on valuation. This step translates the **Exit-AI-R Score** into a projected uplift on the company's EBITDA multiple. This provides a tangible, financial benefit of strong AI capabilities.
+This is where the quantitative AI readiness score translates into tangible financial impact. This page projects how the calculated Exit-AI-R Score can influence a company's valuation, specifically through its EBITDA multiple.
 
-The valuation model uses a simple linear relationship:
+### Page Purpose
 
-$$ \text{Projected EBITDA Multiple} = \text{Baseline EBITDA Multiple} + \left( \frac{\text{Exit-AI-R Score}}{100} \times \text{AI Premium Coefficient} \right) $$
+The `page_4_project_valuation.py` module focuses on financial modeling. It will:
+*   Take the calculated Exit-AI-R Score from the previous step.
+*   Allow users to input key financial metrics (e.g., current EBITDA, base industry multiple).
+*   Model a relationship between AI readiness and an uplift in the EBITDA multiple.
+*   Display the projected valuation uplift and the new enterprise value.
+*   Potentially offer sensitivity analysis or scenario planning.
 
-Where:
-*   $\text{Baseline EBITDA Multiple}$: A foundational multiple based on industry averages or comparable transactions, representing the company's valuation without considering AI differentiation.
-*   $\text{AI Premium Coefficient}$: A factor that determines how strongly the AI-R Score influences the multiple. A higher coefficient implies a greater potential valuation uplift from strong AI.
-*   The $\frac{\text{Exit-AI-R Score}}{100}$ normalizes the score to a 0-1 range.
+### Key Concepts
 
-Let's explore the conceptual content of `application_pages/page_4_valuation.py`:
+*   **EBITDA Multiple Valuation**: A common method where Enterprise Value = EBITDA $\times$ Multiple.
+*   **AI-driven Multiple Expansion**: The hypothesis that companies with stronger AI capabilities command higher valuation multiples due to perceived advantages like innovation, efficiency, competitive moat, and future growth potential.
+*   **Sensitivity Analysis**: Exploring how changes in input variables (e.g., uplift factor, base multiple) affect the final outcome.
+*   **`st.number_input`**: For numerical inputs like financial figures.
+*   **`st.bar_chart` or `st.line_chart`**: For visualizing the valuation impact.
+
+### Expected Functionality
+
+Users will input InnovateTech's current EBITDA and a benchmark industry EBITDA multiple. The application will then apply a predefined or user-adjustable "AI uplift factor" based on the Exit-AI-R Score to calculate a new, higher EBITDA multiple and the corresponding enterprise value.
 
 ```python
-# application_pages/page_4_valuation.py (conceptual content)
+# application_pages/page_4_project_valuation.py (conceptual)
 import streamlit as st
-
-def project_valuation_uplift(baseline_multiple, ai_premium_coefficient, exit_ai_r_score):
-    """Projects the EBITDA multiple based on AI-R Score."""
-    if exit_ai_r_score is None:
-        return None
-    
-    # Normalize AI-R Score to a 0-1 scale
-    normalized_ai_r_score = exit_ai_r_score / 100.0
-    
-    # Calculate projected multiple
-    projected_multiple = baseline_multiple + (normalized_ai_r_score * ai_premium_coefficient)
-    return projected_multiple
+import utils
+import pandas as pd
+import numpy as np
 
 def main():
-    st.header("4. Projecting Valuation Uplift")
-    st.markdown(f"Quantify the impact of **{st.session_state.company_name}'s** AI Exit-Readiness on its EBITDA multiple.")
+    utils.initialize_session_state()
 
-    st.subheader(f"Current Exit-AI-R Score: **{st.session_state.exit_ai_r_score:.2f}**")
+    st.header("4. Project Valuation Uplift")
+    st.markdown(f"""
+    Let's quantify the potential financial impact of **{st.session_state.company_name}'s** Exit-AI-R Score on its valuation.
+    We will model the uplift in EBITDA multiple driven by strong AI readiness.
+    """)
 
-    if st.session_state.exit_ai_r_score is None:
-        st.warning("Please calculate the Exit-AI-R Score in the previous step first.")
-        return
+    exit_ai_r_score = st.session_state.get("exit_ai_r_score", 0)
+    st.metric("Current Exit-AI-R Score", f"{exit_ai_r_score} / 100")
 
-    st.subheader("Valuation Parameters")
-    st.session_state.baseline_ebitda_multiple = st.number_input(
-        "Baseline EBITDA Multiple (e.g., industry average)",
-        min_value=1.0, max_value=20.0, value=st.session_state.baseline_ebitda_multiple, step=0.1,
-        key="baseline_ebitda_multiple_input"
-    )
-    st.session_state.ai_premium_coefficient = st.number_input(
-        "AI Premium Coefficient (how much each point of AI-R score influences multiple)",
-        min_value=0.0, max_value=5.0, value=st.session_state.ai_premium_coefficient, step=0.1,
-        key="ai_premium_coefficient_input"
-    )
-
-    if st.button("Project Valuation Uplift"):
-        st.session_state.projected_ebitda_multiple = project_valuation_uplift(
-            st.session_state.baseline_ebitda_multiple,
-            st.session_state.ai_premium_coefficient,
-            st.session_state.exit_ai_r_score
+    st.subheader("Financial Inputs")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.session_state.current_ebitda = st.number_input(
+            "Current LTM EBITDA ($M)",
+            min_value=0.0, value=st.session_state.get("current_ebitda", 50.0), step=5.0,
+            help="InnovateTech's latest twelve months EBITDA in millions of dollars."
         )
-        st.session_state.project_valuation_triggered = True
-    
-    if st.session_state.project_valuation_triggered and st.session_state.projected_ebitda_multiple is not None:
-        st.subheader("Valuation Impact Summary")
-        col1, col2 = st.columns(2)
-        col1.metric("Baseline EBITDA Multiple", f"{st.session_state.baseline_ebitda_multiple:.1f}x")
-        col2.metric("Projected EBITDA Multiple (with AI Premium)", f"**{st.session_state.projected_ebitda_multiple:.2f}x**")
-        
-        premium_points = st.session_state.projected_ebitda_multiple - st.session_state.baseline_ebitda_multiple
-        st.info(f"The AI Exit-Readiness contributes an estimated **{premium_points:.2f}x** uplift to the EBITDA multiple.")
+    with col2:
+        st.session_state.base_ebitda_multiple = st.number_input(
+            "Base Industry EBITDA Multiple",
+            min_value=1.0, value=st.session_state.get("base_ebitda_multiple", 10.0), step=0.5,
+            help="Typical EBITDA multiple for comparable companies in InnovateTech's industry without significant AI differentiation."
+        )
+
+    st.subheader("AI Impact Modeling")
+    st.markdown("""
+    The AI Exit-Readiness Score will translate into an uplift factor for the EBITDA multiple.
+    """)
+
+    # Simple linear relationship for demonstration
+    # You might have a more complex model (e.g., S-curve, lookup table) in a real application
+    ai_uplift_factor_per_point = st.number_input(
+        "AI Uplift Factor per Score Point (%)",
+        min_value=0.0, max_value=0.5, value=st.session_state.get("ai_uplift_factor_per_point", 0.05), step=0.01,
+        help="Percentage increase in EBITDA multiple for every point in Exit-AI-R Score."
+    ) / 100 # Convert to decimal
+
+    # Calculate AI-driven multiple uplift
+    ai_multiple_uplift_percentage = exit_ai_r_score * ai_uplift_factor_per_point
+    new_ebitda_multiple = st.session_state.base_ebitda_multiple * (1 + ai_multiple_uplift_percentage)
+    valuation_uplift_absolute = (new_ebitda_multiple - st.session_state.base_ebitda_multiple) * st.session_state.current_ebitda
+
+    st.divider()
+
+    st.markdown(f"### Projected AI-Enhanced Valuation for {st.session_state.company_name}")
+
+    col_res1, col_res2, col_res3 = st.columns(3)
+    with col_res1:
+        st.metric("Base Enterprise Value ($M)", f"${st.session_state.current_ebitda * st.session_state.base_ebitda_multiple:,.2f}")
+    with col_res2:
+        st.metric("New EBITDA Multiple", f"{new_ebitda_multiple:,.2f}x")
+    with col_res3:
+        st.metric("New Enterprise Value ($M)", f"${st.session_state.current_ebitda * new_ebitda_multiple:,.2f}")
+
+    st.success(f"Potential Valuation Uplift from AI: **${valuation_uplift_absolute:,.2f}M**")
+
+    # Visualization
+    st.subheader("Valuation Impact Visualization")
+    data = pd.DataFrame({
+        'Category': ['Base Valuation', 'AI-Enhanced Valuation'],
+        'Value ($M)': [st.session_state.current_ebitda * st.session_state.base_ebitda_multiple, st.session_state.current_ebitda * new_ebitda_multiple]
+    })
+    st.bar_chart(data.set_index('Category'))
+
+    st.session_state.projected_new_multiple = new_ebitda_multiple
+    st.session_state.valuation_uplift_amount = valuation_uplift_absolute
+
+    <aside class="negative">
+    <b>Caution:</b> The AI uplift factor is a simplified model for demonstration. In real-world scenarios, this relationship would be derived from rigorous market research, comparable transaction analysis, and expert judgment.
+    </aside>
 ```
 
-**Highlights of this section:**
+## 7. Craft AI Exit Narrative (`page_5_craft_narrative.py`)
+Duration: 0:15:00
 
-*   **Dependency Check**: The application checks if the `exit_ai_r_score` has been calculated before allowing valuation projection, guiding the user through the workflow.
-*   **Parameter Inputs**: `st.number_input()` is again used for `baseline_ebitda_multiple` and `ai_premium_coefficient`, giving users control over the model's assumptions.
-*   **Formula Implementation**: The `project_valuation_uplift` function directly implements the valuation formula.
-*   **Clear Output**: The baseline and projected EBITDA multiples are displayed prominently using `st.metric()`, along with the calculated premium.
-*   **Flag for Display**: `st.session_state.project_valuation_triggered` controls when the results are shown.
+The final step in QuLab is to synthesize all the gathered insights, scores, and financial projections into a coherent and persuasive narrative. This report is crucial for communicating the value of AI to potential buyers.
 
-<aside class="negative">
-<b>Important Consideration:</b> While this model provides a useful conceptual framework, real-world valuation is complex. The "AI Premium Coefficient" should be derived from thorough market research, comparable transactions, and expert judgment. This simplified model serves as an illustrative example.
-</aside>
+### Page Purpose
 
-## 5. Crafting the Exit Narrative
+The `page_5_craft_narrative.py` module is responsible for generating a comprehensive report based on all previous inputs and calculations. It pulls data from `st.session_state` to construct a compelling story about InnovateTech's AI capabilities and their impact on valuation.
+
+### Key Concepts
+
+*   **Data-Driven Storytelling**: Transforming raw data and scores into a persuasive narrative.
+*   **Executive Summary Generation**: Automatically compiling key findings.
+*   **Dynamic Content Generation**: Using f-strings or Markdown formatting to embed variables directly into the report.
+*   **Report Structure**: A logical flow from assessment to financial impact to strategic implications.
+*   **`st.download_button`**: For allowing users to download the generated report (e.g., as a Markdown file or PDF).
+
+### Expected Functionality
+
+This page will display a pre-formatted report that dynamically includes the company name, individual AI dimension scores and descriptions, the calculated Exit-AI-R Score, and the projected valuation uplift. Users can review this narrative and potentially download it.
+
+```python
+# application_pages/page_5_craft_narrative.py (conceptual)
+import streamlit as st
+import utils
+
+def main():
+    utils.initialize_session_state()
+
+    st.header("5. Craft AI Exit Narrative")
+    st.markdown(f"""
+    Here is the comprehensive AI Exit Narrative for **{st.session_state.get('company_name', 'InnovateTech')}**,
+    generated from your assessments and projections. This report is designed to articulate the value of AI
+    to strategic and financial buyers.
+    """)
+
+    company_name = st.session_state.get('company_name', 'InnovateTech')
+    exit_ai_r_score = st.session_state.get('exit_ai_r_score', 0)
+    valuation_uplift = st.session_state.get('valuation_uplift_amount', 0.0)
+    base_ebitda_multiple = st.session_state.get('base_ebitda_multiple', 0.0)
+    projected_new_multiple = st.session_state.get('projected_new_multiple', 0.0)
+
+    report_content = f"""
+# AI Exit-Readiness & Valuation Impact Report: {company_name}
+
+## Executive Summary
+
+**{company_name}** demonstrates a strong AI Exit-Readiness with a calculated **Exit-AI-R Score of {exit_ai_r_score}/100**. This robust positioning in AI is projected to drive a significant valuation uplift, transforming a base industry EBITDA multiple of {base_ebitda_multiple:.2f}x to an AI-enhanced multiple of **{projected_new_multiple:.2f}x**, representing a potential **${valuation_uplift:,.2f}M** increase in enterprise value. This report details the specific AI capabilities contributing to this value.
+
+## 1. AI Capability Assessment
+
+### Visible AI Capabilities
+**Score: {st.session_state.get('ai_visible_score', 0)}/100**
+**Description:** {st.session_state.get('ai_visible_desc', 'No description provided.')}
+
+### Documented AI Capabilities
+**Score: {st.session_state.get('ai_documented_score', 0)}/100**
+**Description:** {st.session_state.get('ai_documented_desc', 'No description provided.')}
+
+### Sustainable AI Capabilities
+**Score: {st.session_state.get('ai_sustainable_score', 0)}/100**
+**Description:** {st.session_state.get('ai_sustainable_desc', 'No description provided.')}
+
+## 2. Exit-AI-R Score Analysis
+
+**Total Exit-AI-R Score: {exit_ai_r_score}/100**
+
+The Exit-AI-R score is derived from a weighted average of the assessed dimensions, reflecting market priorities. This score indicates {company_name}'s overall maturity and strategic positioning in AI, making it an attractive target for acquirers seeking AI-driven growth and innovation.
+
+## 3. Projected Valuation Impact
+
+Based on its strong Exit-AI-R Score, **{company_name}** is expected to command a premium multiple in an M&A transaction.
+*   **Current LTM EBITDA:** ${st.session_state.get('current_ebitda', 0.0):,.2f}M
+*   **Base Industry EBITDA Multiple:** {base_ebitda_multiple:.2f}x
+*   **AI-Enhanced EBITDA Multiple:** {projected_new_multiple:.2f}x
+*   **Potential Valuation Uplift from AI:** **${valuation_uplift:,.2f}M**
+
+This uplift underscores how {company_name}'s strategic investment and execution in AI directly enhance its enterprise value, providing a compelling narrative for potential investors and buyers.
+
+## 4. Strategic Implications for Acquirers
+
+{company_name}'s robust AI capabilities offer acquirers significant strategic advantages, including:
+*   **Accelerated Innovation**: Rapid integration of advanced AI functionalities.
+*   **Competitive Differentiation**: Strengthening market position with unique AI-powered offerings.
+*   **Operational Efficiency**: Leveraging AI for cost savings and process optimization.
+*   **Talent Acquisition**: Inheriting a skilled AI team and established R&D culture.
+
+This report serves as a foundational document for engaging with potential buyers and articulating the full extent of {company_name}'s AI-driven value proposition.
+"""
+    st.markdown(report_content)
+
+    # Download Button
+    st.divider()
+    <button>
+      [Download AI Exit Narrative](data:text/markdown;base64,{
+          import base64
+          b64 = base64.b64encode(report_content.encode()).decode()
+          print(b64)
+      })
+    </button>
+    <aside class="positive">
+    <b>Developer Note:</b> The `data:text/markdown;base64,...` syntax is used to create an immediate download link for dynamically generated content directly within the browser.
+    </aside>
+```
+
+## 8. Extending and Customizing QuLab
 Duration: 0:10:00
 
-A robust quantitative assessment is invaluable, but for M&A, it must be accompanied by a compelling narrative. This final step generates a summary report that articulates **InnovateTech's** AI story, combining the assessed scores and the projected valuation impact into a coherent, persuasive message for potential acquirers.
+QuLab provides a solid framework for AI exit-readiness assessment. This section offers ideas on how developers can extend its functionality and customize it for different use cases.
 
-This narrative helps Jane Doe to clearly communicate:
-*   The company's strengths in AI across different dimensions.
-*   How these strengths translate into a higher valuation.
-*   Why AI represents a strategic advantage for future growth and competitive differentiation.
+### Best Practices for Extension
 
-Let's review the conceptual implementation in `application_pages/page_5_narrative.py`:
+*   **Modularity**: Maintain the separation of concerns by keeping page logic in individual files within `application_pages/`.
+*   **`st.session_state` Management**: Centralize session state initialization in `utils.py` and ensure all pages handle missing keys gracefully (e.g., using `st.session_state.get('key', default_value)`).
+*   **Configuration**: For more complex applications, consider using a separate configuration file (e.g., `config.py` or a YAML file) for parameters like AI dimension names, default weights, or valuation model constants.
 
-```python
-# application_pages/page_5_narrative.py (conceptual content)
-import streamlit as st
+### Potential Enhancements
 
-def generate_exit_narrative(persona_name, firm_name, company_name,
-                            visible_score, documented_score, sustainable_score,
-                            exit_ai_r_score,
-                            baseline_ebitda_multiple, projected_ebitda_multiple):
-    """Generates a comprehensive narrative based on the assessment results."""
-    
-    if any(val is None for val in [exit_ai_r_score, projected_ebitda_multiple]):
-        return "Please complete all previous steps to generate the full narrative."
+1.  **More Sophisticated AI Dimensions**:
+    *   Introduce sub-dimensions (e.g., "AI Governance" under Sustainable AI).
+    *   Allow users to define custom dimensions.
+    *   Integrate pre-defined industry-specific AI maturity models (e.g., for FinTech, Healthcare).
 
-    premium_points = projected_ebitda_multiple - baseline_ebitda_multiple
+2.  **Advanced Valuation Models**:
+    *   Implement different valuation methodologies (e.g., Discounted Cash Flow - DCF).
+    *   Allow for scenario analysis with varying growth rates, discount rates, and AI uplift scenarios.
+    *   Integrate machine learning models to predict multiple uplift based on historical data of AI-related acquisitions.
 
-    narrative = f"""
-    ### AI Exit-Readiness Report for {company_name}
-    **Prepared by:** {persona_name} from {firm_name}
+3.  **Interactive Data Input**:
+    *   Allow uploading of financial data via CSV.
+    *   Connect to external APIs for market data or industry benchmarks.
 
-    
+4.  **Enhanced Reporting**:
+    *   Export reports to PDF or DOCX formats with more advanced formatting.
+    *   Include charts and graphs directly in the generated narrative.
+    *   Allow users to customize report sections or templates.
 
-    #### Executive Summary
-    **{company_name}** has undergone a comprehensive AI Exit-Readiness assessment, revealing a strong position to leverage its Artificial Intelligence capabilities for a premium valuation. With an overall **Exit-AI-R Score of {exit_ai_r_score:.2f} out of 100**, the company demonstrates significant potential for strategic acquirers. This readiness translates into an estimated **{premium_points:.2f}x uplift** on its baseline EBITDA multiple, moving from {baseline_ebitda_multiple:.1f}x to a projected **{projected_ebitda_multiple:.2f}x**. This indicates that {company_name}'s AI strategy is not merely operational, but a quantifiable asset driving shareholder value.
+5.  **User Authentication and Data Persistence**:
+    *   Implement user login to save assessments for multiple companies or sessions.
+    *   Integrate with a database (e.g., SQLite, PostgreSQL) to store company data and analysis results.
 
-    #### AI Dimension Breakdown
-    The assessment evaluated {company_name}'s AI across three critical dimensions:
+6.  **Benchmarking**:
+    *   Allow users to compare their company's AI scores against industry benchmarks or anonymized data from other assessments.
 
-    *   **Visible AI (Score: {visible_score})**: {company_name} demonstrates strong integration of AI into its core products and customer-facing operations. This visibility ensures that the value created by AI is immediately apparent and directly impacts user experience and operational efficiency. *[Further details can be added here based on specific AI initiatives.]*
-    *   **Documented AI (Score: {documented_score})**: The company has a well-defined framework for its AI initiatives, including robust data governance, strategic roadmaps, and a clear understanding of intellectual property. This institutionalized approach minimizes risk and ensures scalability. *[Further details can be added here.]*
-    *   **Sustainable AI (Score: {sustainable_score})**: {company_name} has invested in the long-term viability of its AI capabilities, evidenced by its talent acquisition, R&D efforts, and scalable infrastructure. This ensures a durable competitive advantage and future innovation pipeline. *[Further details can be added here.]*
+7.  **Guidance and Explainability**:
+    *   Add more detailed tooltips, context-sensitive help, or even an AI assistant to guide users through the assessment process.
+    *   Explain *why* a certain AI aspect contributes to valuation.
 
-    #### Valuation Impact
-    Based on our internal model and the calculated Exit-AI-R Score, {company_name}'s AI capabilities are expected to command a significant valuation premium. The application of the AI premium coefficient to the normalized AI-R score projects an enhanced EBITDA multiple, making {company_name} a highly attractive target for both strategic and financial buyers seeking AI-driven growth and innovation.
+### Example: Adding a New AI Dimension (Conceptual)
 
-    
-    This report underscores {company_name}'s strategic advantage in the AI landscape, positioning it for a successful and value-maximizing exit.
-    """
-    return narrative
+To add a "Ethical AI" dimension under "Sustainable AI":
 
-def main():
-    st.header("5. Crafting the Exit Narrative")
-    st.markdown(f"Generate a compelling AI exit narrative for **{st.session_state.company_name}** based on the assessment results.")
+1.  **Update `utils.py`**:
+    ```python
+    # utils.py
+    def initialize_session_state():
+        # ... existing initializations ...
+        if "ai_ethical_score" not in st.session_state:
+            st.session_state.ai_ethical_score = 70
+        if "ai_ethical_desc" not in st.session_state:
+            st.session_state.ai_ethical_desc = "Strong ethical AI guidelines and oversight committee in place."
+        # ... update dimension_weights default to include ethical_ai ...
+    ```
 
-    if st.button("Generate AI Exit Narrative"):
-        st.session_state.generate_narrative_triggered = True
-    
-    if st.session_state.generate_narrative_triggered:
-        narrative_text = generate_exit_narrative(
-            st.session_state.persona_name,
-            st.session_state.firm_name,
-            st.session_state.company_name,
-            st.session_state.visible_score,
-            st.session_state.documented_score,
-            st.session_state.sustainable_score,
-            st.session_state.exit_ai_r_score,
-            st.session_state.baseline_ebitda_multiple,
-            st.session_state.projected_ebitda_multiple
-        )
-        st.markdown(narrative_text)
-        
-        # Optional: Add a download button for the narrative
-        st.download_button(
-            label="Download Narrative (Markdown)",
-            data=narrative_text,
-            file_name=f"AI_Exit_Readiness_Report_{st.session_state.company_name}.md",
-            mime="text/markdown"
-        )
-```
+2.  **Modify `page_2_assess_dimensions.py`**:
+    *   Add `st.subheader` and `st.slider` for "Ethical AI" input.
 
-**Key features in this final step:**
+3.  **Modify `page_3_calculate_score.py`**:
+    *   Update the weighted average calculation to include the new dimension and its weight.
+    *   Add a slider for "Weight for Ethical AI (%)".
 
-*   **Comprehensive Narrative Generation**: The `generate_exit_narrative` function pulls all relevant data from `st.session_state` to construct a detailed report. It's written using f-strings for easy templating.
-*   **Markdown Formatting**: The generated narrative leverages markdown syntax (`###`, `**`, `*`, ``) directly, so when displayed with `st.markdown()`, it renders beautifully formatted text within Streamlit.
-*   **Download Functionality**: `st.download_button()` allows users to download the generated narrative as a Markdown file, providing a portable report. This is a powerful feature for sharing results.
-*   **Dependency Check**: Ensures all previous calculations are complete before attempting to generate the narrative.
+4.  **Modify `page_5_craft_narrative.py`**:
+    *   Include the new dimension's score and description in the generated report.
 
-By following these steps, you have successfully navigated the entire workflow of the AI Exit-Readiness & Valuation Impact Calculator, gaining insights into Streamlit development, session state management, and the practical application of AI assessment in M&A. This tool empowers portfolio managers to systematically evaluate, quantify, and articulate the value of AI in their companies, driving better exit outcomes.
+By following these guidelines and leveraging Streamlit's capabilities, developers can transform QuLab into an even more powerful and versatile tool for navigating the complexities of AI-driven M&A.
 
-<aside class="positive">
-<b>Further Enhancements:</b> You could extend this application by:
-<ul>
-    <li>Integrating with actual LLMs (e.g., GPT-4) to generate more sophisticated and nuanced narratives based on custom inputs.</li>
-    <li>Adding more detailed sub-dimensions for each AI category.</li>
-    <li>Allowing users to save and load different assessment scenarios.</li>
-    <li>Implementing interactive charts (e.g., radar charts for AI dimensions, trend lines for valuation impact) using libraries like Plotly or Altair.</li>
-</ul>
-</aside>
